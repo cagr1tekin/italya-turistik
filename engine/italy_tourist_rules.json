@@ -1,0 +1,659 @@
+{
+  "meta": {
+    "ulke": "italya",
+    "amac": "turistik",
+    "versiyon": "2.0.0",
+    "kaynak": "iDATA - it-tr-appointment.idata.com.tr",
+    "guncelleme": "2026-04-30",
+    "aciklama": "İtalya turistik vize başvurusu için tüm kombinasyonların kural tabanlı evrak listesi motoru. 9 meslek × 2 konaklama × 2 çocuklu × 5 ulaşım = 180 kombinasyon. v2.0: iDATA PDF örneklerinden doğrulanan gerçek meslek grupları ve ulaşım tipleri.",
+    "boyutlar": {
+      "meslek_gruplari": ["calisan", "isveren", "serbest_meslek", "emekli", "ogrenci", "memur", "ciftci", "calismayanlar", "cocuk"],
+      "meslek_gruplari_aciklama": {
+        "calisan": "Çalışan (SSK/Kadrolu)",
+        "isveren": "İş Veren (Şirket Sahibi)",
+        "serbest_meslek": "Serbest Meslek (Avukat, Doktor, Esnaf vb.)",
+        "emekli": "Emekli",
+        "ogrenci": "Öğrenci",
+        "memur": "Memur (Kadrolu Devlet Memuru)",
+        "ciftci": "Çiftçi",
+        "calismayanlar": "Çalışmayan Kişiler (Ev Hanımı, İşsiz vb.)",
+        "cocuk": "Çocuk (0-6 yaş)"
+      },
+      "konaklama_turleri": ["otel", "davetiye"],
+      "cocuklu_seyahat": [false, true],
+      "ulasim_araclari": ["ucak", "arac", "otobus", "gemi", "tren"],
+      "ulasim_araclari_aciklama": {
+        "ucak": "Uçak (Tur organizasyonu dahil)",
+        "arac": "Otomobil / Motorsiklet",
+        "otobus": "Otobüs",
+        "gemi": "Gemi / Tekne",
+        "tren": "Tren / İnterrail"
+      },
+      "basvuru_bolgeleri": ["ankara", "istanbul", "izmir", "diger"]
+    }
+  },
+
+  "standart_evraklar": {
+    "aciklama": "Her kombinasyonda zorunlu, değişmez evraklar",
+    "evraklar": [
+      {
+        "id": "PASAPORT",
+        "ad": "Pasaport",
+        "zorunlu": true,
+        "detay": "Talep edilen vize bitiş tarihinden sonra en az 90 gün geçerliği ve en az iki boş sayfası olan pasaport. Pasaportun ve varsa eski pasaportların (kişisel bilgiler ve tüm vize/damga sayfaları) fotokopisi.",
+        "kopya": true,
+        "orijinal": true,
+        "uyari": "Eski pasaportlar varsa tüm vize sayfaları dahil fotokopi gereklidir. Evlenme/boşanma nedeniyle güncellenmemiş pasaportlar geçerli değildir."
+      },
+      {
+        "id": "KIMLIK_FOTOKOPI",
+        "ad": "Kimlik Fotokopisi",
+        "zorunlu": true,
+        "detay": "TC kimlik no bulunan TC nüfus cüzdanının fotokopisi. Yabancı uyruklular için TC makamları tarafından verilmiş oturma izninin fotokopisi.",
+        "kopya": true,
+        "orijinal": false
+      },
+      {
+        "id": "BASVURU_FORMU",
+        "ad": "Başvuru Formu",
+        "zorunlu": true,
+        "detay": "Başvuru sahibi tarafından doldurulmuş, imza kutucukları imzalanmış ve tarih atılmış vize başvuru formu. Schengen vize başvuru formu (90 güne kadar konaklamalar) / Ulusal vize başvuru formu (90 günü aşan konaklamalar). Başvuru formunda ikamet adresi yazılı olmalıdır.",
+        "kopya": false,
+        "orijinal": true
+      },
+      {
+        "id": "BIYOMETRIK_FOTOGRAF",
+        "ad": "Biyometrik Fotoğraf",
+        "zorunlu": true,
+        "detay": "Açık renk fonlu 35×40 mm ebatlarında 2 adet biyometrik fotoğraf. ICAO standartları: yüz fotoğrafın %70-80'ini kaplamalı, gözler açık, nötr ifade, gölge/yansıma yok.",
+        "adet": 2,
+        "orijinal": true,
+        "uyari": "+12 yaş için 12 aydan, -12 yaş için 3 aydan eski olmamalıdır."
+      },
+      {
+        "id": "SEYAHAT_SAGLIK_SIGORTASI",
+        "ad": "Seyahat Sağlık Sigortası",
+        "zorunlu": true,
+        "detay": "Öngörülen yolculuk ve Schengen ülkelerinde kalınacak süreyi kapsayan, sağlık sorunları, acil tedavi, hastanede yatış, hastalık ya da vefata bağlı yurda dönüş masraflarını karşılayan en az 30.000 Euro teminatlı sigorta.",
+        "min_teminat_eur": 30000,
+        "kapsam": "tum_schengen",
+        "uyari": "Gidiş tarihinden 1 gün önce ve dönüş tarihinden 1 gün sonrasını kapsamalıdır. Teminat Euro olarak belirtilmiş olmalıdır."
+      },
+      {
+        "id": "VIZE_HARCI",
+        "ad": "Vize Harcı",
+        "zorunlu": true,
+        "detay": "Vize harç bedeli iDATA ofislerinde nakit olarak ödenir. Harç iade edilmez.",
+        "odeme_yeri": "iDATA_ofisi",
+        "odeme_sekli": "nakit"
+      },
+      {
+        "id": "TARIHCELI_YERLESIM_YERI",
+        "ad": "Tarihçeli Yerleşim Yeri Belgesi",
+        "zorunlu": true,
+        "detay": "E-devletten alınmış barkodlu Tarihçeli yerleşim yeri belgesi.",
+        "kaynak": "e_devlet",
+        "ozellik": "barkodlu"
+      },
+      {
+        "id": "VUKUATLI_NUFUS",
+        "ad": "Tam Vukuatlı Nüfus Kayıt Örneği",
+        "zorunlu": true,
+        "detay": "E-devletten alınmış barkodlu tam vukuatlı nüfus kayıt örneği.",
+        "kaynak": "e_devlet",
+        "ozellik": "barkodlu"
+      },
+      {
+        "id": "SEYAHAT_BILDIRGE",
+        "ad": "Seyahat Bildirge / Dilekçe",
+        "zorunlu": true,
+        "detay": "Tüm seyahati ayrıntılı açıklayan dilekçe. İçeriğinde: aylık ortalama gelir beyanı, birlikte seyahat eden kişilerin bildirilmesi, kişinin vize fotokopisi ve varsa yeşil pasaport fotokopisi zorunludur. Balayı seyahatinde: Belediyeden alınmış imzalı nikah tarihi belgesi ek olarak sunulmalıdır.",
+        "zorunlu_icindekiler": ["aylik_gelir_beyani", "birlikte_seyahat_edenlerin_bildirimi", "vize_fotokopisi"],
+        "ek_kosul_balayinda": "belediye_nikah_belgesi"
+      }
+    ]
+  },
+
+  "ulasim_kurallari": {
+    "aciklama": "Seçilen ulaşım aracına göre eklenen evraklar",
+
+    "ucak": {
+      "id": "UCUS_REZERVASYONU",
+      "ad": "Uçuş / Tur Rezervasyonu",
+      "zorunlu": true,
+      "detay": "Gidiş-dönüş uçuş rezervasyonu. Tarihler ve seyahat detaylarını içermelidir. Rezervasyonda tüm birlikte başvuru yapan kişilerin isimleri yer almalıdır. TUR ORGANIZASYONU seçilmesi durumunda uçuş rezervasyonuna EK OLARAK: Tur kayıt belgesi, Tur programı ve kaşeli/imzalı Tur ödeme makbuzu sunulmalıdır.",
+      "tur_ek_evraklari": {
+        "evraklar": ["tur_kayit_belgesi", "tur_programi", "kaseli_imzali_tur_odeme_makbuzu"],
+        "bolge_fark": {
+          "ankara": "Ek: e-fatura zorunludur. Ödeme banka havalesi ise dekont, kredi kartı ise ödemenin göründüğü hesap ekstresi.",
+          "istanbul": "Standart makbuz yeterlidir.",
+          "izmir": "Standart makbuz yeterlidir.",
+          "diger": "Standart makbuz yeterlidir."
+        }
+      }
+    },
+
+    "arac": [
+      {
+        "id": "ARAC_RUHSATI",
+        "ad": "Araç Ruhsatı Fotokopisi",
+        "zorunlu": true,
+        "detay": "Aracın güncel ruhsatının fotokopisi. Seyahat güzergah yazısı ile birlikte sunulmalıdır."
+      },
+      {
+        "id": "ARAC_SIGORTASI",
+        "ad": "Uluslararası Araç Sigortası (Yeşil Kart)",
+        "zorunlu": true,
+        "detay": "Seyahat süresini kapsayan uluslararası (yeşil kart) araç sigortası."
+      },
+      {
+        "id": "EHLIYET",
+        "ad": "Ehliyet Fotokopisi",
+        "zorunlu": true,
+        "detay": "Aracı kullanacak kişinin ehliyet fotokopisi. Avrupa ülkeleri arasında geçiş öngörüldüğü durumlarda güzergah ve ulaşım araçlarını açıklar yazı da gerekir."
+      }
+    ],
+
+    "otobus": {
+      "id": "OTOBUS_BILETI",
+      "ad": "Otobüs Bileti / Rezervasyonu",
+      "zorunlu": true,
+      "detay": "Seyahat firmasından temin edilmiş otobüs bileti veya rezervasyon çıktısı. Seyahat detaylarını içermelidir. Avrupa ülkeleri arasında geçiş öngörüldüğü durumlarda güzergah ve ulaşım araçlarını açıklar yazı gerekir."
+    },
+
+    "gemi": {
+      "id": "GEMI_BELGESI",
+      "ad": "Gemi / Tekne Seyahat Belgesi",
+      "zorunlu": true,
+      "detay": "Gemi turu: Tur organizasyonuna ait güzergah yazısı ve rezervasyonlar. Gemi çalışanı: Gemici belgesi aslı ve fotokopisi ile ticari belgeler. Tekne: Bağlama Kütüğü ya da Tonilato Belgesi, teknenin geçerli sigortası, tekne sahibinden davet yazısı (gidiş-dönüş tarihi ve davetli isimleri içermeli), kaptanlık belgeleri, kaptan pasaportu ilk sayfası ve geçerli vize fotokopisi; kiralık tekne ise kira sözleşmesi."
+    },
+
+    "tren": {
+      "id": "TREN_BILETI",
+      "ad": "Tren Bileti / İnterrail Bileti",
+      "zorunlu": true,
+      "detay": "İnterrail biletinin orijinali ve fotokopisi sunulmalıdır. AB ülkeleri arasındaki olası geçişler rezervasyonlarla desteklenmelidir. Avrupa ülkeleri arasında geçiş öngörüldüğü durumlarda güzergah yazısı ve ilgili ulaşım araçlarına ilişkin rezervasyonlar sunulmalıdır."
+    }
+  },
+
+  "konaklama_kurallari": {
+    "aciklama": "Seçilen konaklama türüne göre eklenen evraklar",
+
+    "otel": {
+      "id": "OTEL_REZERVASYONU",
+      "ad": "Otel / Konaklama Rezervasyonu",
+      "zorunlu": true,
+      "detay": "Seyahat boyunca kalınacak otel veya konaklama yerinin rezervasyon belgesi. İptal edilebilir rezervasyon kabul edilir.",
+      "uyari": "Rezervasyonda tüm birlikte başvuru yapan kişilerin isimleri yer almalıdır."
+    },
+
+    "davetiye": [
+      {
+        "id": "DAVET_MEKTUBU",
+        "ad": "Davet Mektubu",
+        "zorunlu": true,
+        "detay": "İtalya'da ikamet eden bir kişiden davet mektubu (başvuru formları bölümündeki davet mektubu şablonuna bakınız). Davet eden kişinin adres ve iletişim bilgilerini içermelidir.",
+        "uyari": "Fotokopilerin renkli çıktı olması gerekmektedir. iDATA ofislerinde renkli çıktı hizmeti verilmemektedir."
+      },
+      {
+        "id": "EV_SAHIBI_KIMLIK",
+        "ad": "Ev Sahibinin Kimlik / Oturma İzni Fotokopisi (Renkli)",
+        "zorunlu": true,
+        "detay": "Davet eden kişinin geçerli pasaport fotokopisi. Davet eden kişi AB vatandaşı değil ise İtalya oturma izninin fotokopisi. Fotokopilerin renkli çıktı olması gerekmektedir.",
+        "uyari": "Renkli çıktı zorunludur. iDATA ofislerinde renkli çıktı hizmeti verilmemektedir.",
+        "izmir_ozel": "Uzun süreli ilişki (nişan/arkadaşlık) kapsamında başvuruda bulunuyorsanız: davet eden kişi tarafından yazılmış ilişki süresini belirten detaylı imzalı dilekçe ve kanıtlayıcı belgeler gereklidir. 'Uzak mesafe ilişki' formu davet eden ve başvuru sahibi tarafından İngilizce olarak doldurulup sunulmalıdır."
+      }
+    ]
+  },
+
+  "meslek_kurallari": {
+    "aciklama": "Meslek grubuna göre zorunlu ek evraklar. iDATA'nın 9 resmi kategorisi (PDF'lerden doğrulandı).",
+
+    "calisan": {
+      "ad": "Çalışan (SSK / Kadrolu)",
+      "evraklar": [
+        {
+          "id": "CALISMA_IZIN_BELGESI",
+          "ad": "Çalışma & İzin Belgesi",
+          "zorunlu": true,
+          "detay": "Şirketin antetli kağıdına yazılmış, işveren tarafından imzalanmış ve kaşelenmiş, seyahat amacını açıklayan dilekçe (isten izin yazısı). Barkodlu 4b Bağ-kur detaylı hizmet dökümü.",
+          "icindekiler": ["isten_izin_yazisi", "4b_bagkur_hizmet_dokumu"]
+        },
+        {
+          "id": "CALISMA_EVRAKLARI",
+          "ad": "Çalışma Evrakları",
+          "zorunlu": true,
+          "detay": "İşe giriş bildirgesi ve tüm hizmet geçmişini gösterir barkodlu 4a hizmet dökümü ile işveren tarafından imzalanmış ve kaşelenmiş son üç aya ait maaş bordroları.",
+          "icindekiler": ["ise_giris_bildirimi", "4a_hizmet_dokumu_barkodlu", "son_3_ay_maas_bordrosu"]
+        },
+        {
+          "id": "IMZA_SIRKULERI_CALISAN",
+          "ad": "İmza Sirküleri (Şahsi Hesap)",
+          "zorunlu": true,
+          "detay": "Çalışanın şahsi banka hesabına ait imza sirküleri.",
+          "uyari_ankara": "Ankara Büyükelçiliğine başvuru yapacak kişilerin imza sirkülerini sunması gerekmemektedir.",
+          "uyari_diger": "Ankara dışındaki başvurularda imza sirküleri zorunludur."
+        },
+        {
+          "id": "MADDI_GELIR_CALISAN",
+          "ad": "Maddi Gelir Evrakları",
+          "zorunlu": true,
+          "detay": "Banka şubesi tarafından kaşelenmiş ve imzalanmış son altı aylık maaş yatış işlemlerini gösteren hesap dökümü. Başvuru tarihinden önceki son 15 gün içinde düzenlenmiş kaşeli/imzalı hesap cüzdanı aslı ve okunaklı fotokopisi. Maaşı elden alıyorsa 'maaş elden verildiğini' beyan eden dilekçe. Son 3 ayın kaşeli ve imzalı maaş bordroları.",
+          "icindekiler": ["son_6_ay_hesap_dokumu_kaseli", "hesap_cuzdani_15gun_taze", "son_3_ay_maas_bordrolari"]
+        },
+        {
+          "id": "TEMINAT",
+          "ad": "Teminat (Finansal Yeterlilik)",
+          "zorunlu": true,
+          "detay": "İtalya İçişleri Bakanlığı'nın yürürlükteki düzenlemeleri ile kalış süresine göre tespit edilen tutarlara uygun maddi imkanların belgelenmesi.",
+          "kaynak": "italya_iceisleri_bakanligi"
+        }
+      ],
+      "ek_kural": "İşveren olup aynı zamanda başka bir kurumda çalışan statüsünde olan kişiler, çalışan kategorisindeki evrakları EK olarak sunmalıdır."
+    },
+
+    "isveren": {
+      "ad": "İş Veren (Şirket Sahibi)",
+      "evraklar": [
+        {
+          "id": "FAALIYET_BELGESI",
+          "ad": "Faaliyet Belgesi",
+          "zorunlu": true,
+          "detay": "Şirkete ait, şirket faaliyet durumuna uygun belge (faaliyet belgesi, esnaf/ziraat odası kayıt belgesi, mesleki oda kaydı evrakı, ticaret odası kaydı). Son 3 ay içinde alınmış belge aslı.",
+          "gecerlilik": "son_3_ay",
+          "uyari": "Ticaret Odalarının web sitelerinden alınan e-imzalı faaliyet belgelerinin geçerlik süresi bir aydır."
+        },
+        {
+          "id": "TICARET_SICIL_GAZETESI",
+          "ad": "Ticaret Sicil Gazetesi",
+          "zorunlu": true,
+          "detay": "Faaliyetin güncel yapısını gösterir Ticaret Sicil Gazetesi fotokopisi."
+        },
+        {
+          "id": "VERGI_LEVHASI_ISVEREN",
+          "ad": "Vergi Levhası Fotokopisi",
+          "zorunlu": true,
+          "detay": "Güncel vergi levhası fotokopisi."
+        },
+        {
+          "id": "CALISMA_IZIN_BELGESI_ISVEREN",
+          "ad": "Çalışma & İzin Belgesi",
+          "zorunlu": true,
+          "detay": "İşyerine ait şirketin antetli kağıdına yazılmış seyahat amacını açıklayan dilekçe. Barkodlu 4b Bağ-kur detaylı hizmet dökümü.",
+          "icindekiler": ["sirket_antetli_dilekce", "4b_bagkur_hizmet_dokumu"]
+        },
+        {
+          "id": "IMZA_SIRKULERI_ISVEREN",
+          "ad": "İmza Sirküleri / Beyannamesi",
+          "zorunlu": true,
+          "detay": "Şirkete ait imza sirkülerinin fotokopisi. Şahıs şirketlerinde imza beyannamesinin fotokopisi.",
+          "uyari_ankara": "Ankara Büyükelçiliğine başvuru yapacak kişiler için imza sirküleri gerekmemektedir."
+        },
+        {
+          "id": "MADDI_GELIR_ISVEREN",
+          "ad": "Maddi Gelir Evrakları",
+          "zorunlu": true,
+          "detay": "Son altı aylık kaşeli/imzalı hesap dökümü. Başvuru tarihinden önceki son 15 gün içinde düzenlenmiş hesap cüzdanı aslı. Son 3 ayın maaş bordroları, emeklilik gelirleri, kira kontratları, tapular.",
+          "icindekiler": ["son_6_ay_hesap_dokumu_kaseli", "hesap_cuzdani_15gun_taze"]
+        },
+        {
+          "id": "TEMINAT",
+          "ad": "Teminat (Finansal Yeterlilik)",
+          "zorunlu": true,
+          "detay": "İtalya İçişleri Bakanlığı tutarlarına uygun mali yeterlilik belgesi.",
+          "kaynak": "italya_iceisleri_bakanligi"
+        }
+      ],
+      "ek_kural": "İşveren olup aynı zamanda başka bir kurumda çalışan statüsünde olan kişiler, çalışan kategorisindeki evrakları EK olarak sunmalıdır."
+    },
+
+    "serbest_meslek": {
+      "ad": "Serbest Meslek (Avukat, Doktor, Esnaf vb.)",
+      "evraklar": [
+        {
+          "id": "TICARI_ODA_KAYDI",
+          "ad": "Ticari / Mesleki Oda Kaydı",
+          "zorunlu": true,
+          "detay": "Şirkete ait, şirket faaliyet durumuna uygun belge aslı: faaliyet belgesi, esnaf/ziraat odası kayıt belgesi, mesleki oda kaydı evrakı (Baro kaydı vb.), ticaret odası kaydı. Avukatlar: kendi Baro kayıtlarına ek olarak başka bir avukatın yanında çalışıyorlarsa o avukatın Baro kaydını da ibraz etmelidir.",
+          "gecerlilik": "son_3_ay"
+        },
+        {
+          "id": "VERGI_LEVHASI_SERBEST",
+          "ad": "Vergi Levhası Fotokopisi",
+          "zorunlu": true,
+          "detay": "Güncel vergi levhası fotokopisi."
+        },
+        {
+          "id": "MADDI_GELIR_SERBEST",
+          "ad": "Maddi Gelir Evrakları",
+          "zorunlu": true,
+          "detay": "Banka şubesi tarafından kaşelenmiş ve imzalanmış son altı aylık hesap dökümü. Başvuru tarihinden önceki son 15 gün içinde düzenlenmiş hesap cüzdanı aslı. Gelir beyanları, kira kontratları, tapular.",
+          "icindekiler": ["son_6_ay_hesap_dokumu_kaseli", "hesap_cuzdani_15gun_taze"],
+          "uyari_ankara": "Ankara Büyükelçiliğine başvuru yapacak kişilerin imza sirkülerini sunması gerekmemektedir."
+        },
+        {
+          "id": "TEMINAT",
+          "ad": "Teminat (Finansal Yeterlilik)",
+          "zorunlu": true,
+          "detay": "İtalya İçişleri Bakanlığı tutarlarına uygun mali yeterlilik belgesi.",
+          "kaynak": "italya_iceisleri_bakanligi"
+        }
+      ]
+    },
+
+    "emekli": {
+      "ad": "Emekli",
+      "evraklar": [
+        {
+          "id": "EMEKLILIK_BELGESI",
+          "ad": "Emeklilik Belgesi / SGK Hizmet Dökümü",
+          "zorunlu": true,
+          "detay": "E-Devletten veya SGK'dan alınmış barkodlu hizmet dökümü. Emekli sandığı veya banka emeklilerinin bağlı olduğu kuruluştan emekli olduklarına dair ıslak imzalı kaşeli yazı gerekmektedir.",
+          "icindekiler": ["sgk_hizmet_dokumu_barkodlu", "emeklilik_kurumu_yazisi_islak_imzali"]
+        },
+        {
+          "id": "MADDI_GELIR_EMEKLI",
+          "ad": "Maddi Gelir Evrakları",
+          "zorunlu": true,
+          "detay": "Banka şubesi tarafından kaşelenmiş ve imzalanmış son altı aylık maaş yatış işlemlerini gösteren hesap dökümü. Başvuru tarihinden önceki son 15 gün içinde düzenlenmiş hesap cüzdanı aslı ve okunaklı fotokopisi. Emeklilik gelirleri, kira kontratları, tapular.",
+          "icindekiler": ["son_6_ay_hesap_dokumu_kaseli", "hesap_cuzdani_15gun_taze"],
+          "uyari_ankara": "Ankara Büyükelçiliğine başvuru yapacak kişilerin imza sirkülerini sunması gerekmemektedir."
+        },
+        {
+          "id": "TEMINAT",
+          "ad": "Teminat (Finansal Yeterlilik)",
+          "zorunlu": true,
+          "detay": "İtalya İçişleri Bakanlığı tutarlarına uygun mali yeterlilik belgesi.",
+          "kaynak": "italya_iceisleri_bakanligi"
+        }
+      ]
+    },
+
+    "ogrenci": {
+      "ad": "Öğrenci",
+      "evraklar": [
+        {
+          "id": "OGRENCI_BELGESI",
+          "ad": "Öğrenci Belgesi",
+          "zorunlu": true,
+          "detay": "Öğrenim görülen okuldan kaşeli/imzalı veya e-devletten son 3 ay içerisinde alınmış barkodlu öğrenci belgesi.",
+          "gecerlilik": "son_3_ay",
+          "kaynak_alternatifleri": ["okul_kaseli_imzali", "e_devlet_barkodlu"]
+        },
+        {
+          "id": "MADDI_GELIR_OGRENCI",
+          "ad": "Maddi Gelir Evrakları",
+          "zorunlu": true,
+          "detay": "Banka şubesi tarafından kaşelenmiş ve imzalanmış son altı aylık hesap dökümü. Başvuru tarihinden önceki son 15 gün içinde düzenlenmiş hesap cüzdanı aslı.",
+          "icindekiler": ["son_6_ay_hesap_dokumu_kaseli", "hesap_cuzdani_15gun_taze"]
+        },
+        {
+          "id": "TEMINAT",
+          "ad": "Teminat (Finansal Yeterlilik)",
+          "zorunlu": true,
+          "detay": "İtalya İçişleri Bakanlığı tutarlarına uygun mali yeterlilik belgesi.",
+          "kaynak": "italya_iceisleri_bakanligi"
+        },
+        {
+          "id": "MADDI_DESTEKCI_OGRENCI",
+          "ad": "Maddi Destekçi Evrakları",
+          "zorunlu": true,
+          "detay": "Geçimini sağlayan ebeveyne ait mali durumu gösteren evraklar. Masrafları karşılayacak eş veya ebeveynler kendileri başvurmasa bile şahsen başvuruda bulunacakları şekilde tüm çalışma ve gelir evraklarını eksiksiz ibraz etmek durumundadır. Nüfus kayıt örneği (ebeveyn-çocuk ilişkisini gösterir), ebeveynin maddi yükümlülüğü üstlendiğini beyan eder mektup ve imza beyanı (ehliyet fotokopisi vb. imzalı resmi belge).",
+          "icindekiler": ["nufus_kayit_ornegi", "ebeveyn_gelir_evraklari", "ebeveyn_taahhut_mektubu", "ebeveyn_imza_beyani"]
+        }
+      ]
+    },
+
+    "memur": {
+      "ad": "Memur (Kadrolu Devlet Memuru)",
+      "evraklar": [
+        {
+          "id": "CALISMA_IZIN_BELGESI_MEMUR",
+          "ad": "Çalışma & İzin Belgesi (Memur)",
+          "zorunlu": true,
+          "detay": "İşveren kuruma ait antetli kağıt üzerinde çalışanın görevini, işe giriş tarihini, maaşını ve talep ettiği izin süresini belirten, kaşeli ve imza yetkilisi tarafından imzalanmış yazı. E-devletten alınmış UZUN VADE barkodlu hizmet dökümü (Çalışan kategorisindeki 4a/4b Bağ-kur değil).",
+          "icindekiler": ["kurum_antetli_gorev_belgesi_kaseli_imzali", "e_devlet_uzun_vade_hizmet_dokumu_barkodlu"]
+        },
+        {
+          "id": "MADDI_GELIR_MEMUR",
+          "ad": "Maddi Gelir Evrakları",
+          "zorunlu": true,
+          "detay": "Banka şubesi tarafından kaşelenmiş ve imzalanmış son altı aylık maaş yatış işlemlerini gösteren hesap dökümü. Başvuru tarihinden önceki son 15 gün içinde düzenlenmiş hesap cüzdanı aslı ve okunaklı fotokopisi. Son 3 ayın kaşeli ve imzalı maaş bordroları.",
+          "icindekiler": ["son_6_ay_hesap_dokumu_kaseli", "hesap_cuzdani_15gun_taze", "son_3_ay_maas_bordrolari"],
+          "uyari_ankara": "Ankara Büyükelçiliğine başvuru yapacak kişilerin imza sirkülerini sunması gerekmemektedir."
+        },
+        {
+          "id": "TEMINAT",
+          "ad": "Teminat (Finansal Yeterlilik)",
+          "zorunlu": true,
+          "detay": "İtalya İçişleri Bakanlığı tutarlarına uygun mali yeterlilik belgesi.",
+          "kaynak": "italya_iceisleri_bakanligi"
+        }
+      ]
+    },
+
+    "ciftci": {
+      "ad": "Çiftçi",
+      "evraklar": [
+        {
+          "id": "CIFTCILIK_BELGESI",
+          "ad": "Çiftçilik Belgesi",
+          "zorunlu": true,
+          "detay": "Ziraat odalarından temin edilmiş güncel tarihli çiftçilik kazancını gösterir belge ve detaylı barkodlu hizmet dökümü.",
+          "kaynak": "ziraat_odasi",
+          "icindekiler": ["ziraat_odasi_ciftcilik_kazanc_belgesi", "barkodlu_hizmet_dokumu"]
+        },
+        {
+          "id": "MADDI_GELIR_CIFTCI",
+          "ad": "Maddi Gelir Evrakları",
+          "zorunlu": true,
+          "detay": "Banka şubesi tarafından kaşelenmiş ve imzalanmış son altı aylık hesap dökümü. Başvuru tarihinden önceki son 15 gün içinde düzenlenmiş hesap cüzdanı aslı. Gelir beyanları, tarımsal gelir belgeleri.",
+          "icindekiler": ["son_6_ay_hesap_dokumu_kaseli", "hesap_cuzdani_15gun_taze"],
+          "uyari_ankara": "Ankara Büyükelçiliğine başvuru yapacak kişilerin imza sirkülerini sunması gerekmemektedir."
+        },
+        {
+          "id": "TEMINAT",
+          "ad": "Teminat (Finansal Yeterlilik)",
+          "zorunlu": true,
+          "detay": "İtalya İçişleri Bakanlığı tutarlarına uygun mali yeterlilik belgesi.",
+          "kaynak": "italya_iceisleri_bakanligi"
+        }
+      ]
+    },
+
+    "calismayanlar": {
+      "ad": "Çalışmayan Kişiler (Ev Hanımı, İşsiz vb.)",
+      "evraklar": [
+        {
+          "id": "MADDI_GELIR_CALISMAYANLAR",
+          "ad": "Maddi Gelir Evrakları",
+          "zorunlu": true,
+          "detay": "Banka şubesi tarafından kaşelenmiş ve imzalanmış son altı aylık hesap dökümü. Başvuru tarihinden önceki son 15 gün içinde düzenlenmiş hesap cüzdanı aslı ve okunaklı fotokopisi. Varsa gelir kaynağını gösterir belgeler (kira gelirleri, tapu vb.).",
+          "icindekiler": ["son_6_ay_hesap_dokumu_kaseli", "hesap_cuzdani_15gun_taze"],
+          "uyari_ankara": "Ankara Büyükelçiliğine başvuru yapacak kişilerin imza sirkülerini sunması gerekmemektedir."
+        },
+        {
+          "id": "TEMINAT",
+          "ad": "Teminat (Finansal Yeterlilik)",
+          "zorunlu": true,
+          "detay": "İtalya İçişleri Bakanlığı tutarlarına uygun mali yeterlilik belgesi.",
+          "kaynak": "italya_iceisleri_bakanligi"
+        },
+        {
+          "id": "MADDI_DESTEKCI_CALISMAYANLAR",
+          "ad": "Maddi Destekçi Evrakları",
+          "zorunlu": true,
+          "detay": "Tam Vukuatlı Nüfus Kayıt Örnekleri, geçimlerini sağlayan eş ya da ebeveynlerine ait mali durumu gösterir evraklar, maddi yükümlülüğü üstlendiğini beyan eder mektup ve imza beyanı (ehliyet fotokopisi vb.). Masrafları karşılayacak eş veya ebeveynler kendileri başvurmasa bile tüm çalışma ve gelir evraklarını eksiksiz ibraz etmek durumundadır.",
+          "icindekiler": ["tam_vukuatli_nufus_kayit_ornegi", "sponsor_gelir_evraklari", "maddi_yukumluluk_taahhut_mektubu", "imza_beyani"],
+          "bolge_ozel": {
+            "ankara": "Birinci derece dışındaki akrabaların sponsorluğu kabul edilmemektedir.",
+            "istanbul": "Birinci derece dışındaki akrabaların sponsorluğu kabul edilmemektedir.",
+            "izmir": "Ebeveynlerin sponsor olması durumunda her iki ebeveyne ait maddi gelir evrakları sunulmalıdır. Birinci derece akraba dışında sponsorluk olması durumunda noterden taahhütname sunulmalıdır.",
+            "diger": "Standart uygulama."
+          }
+        }
+      ]
+    },
+
+    "cocuk": {
+      "ad": "Çocuk (0-6 yaş)",
+      "aciklama": "0-6 yaş arası çocuklar için özel evrak listesi. Bu kategori çocuğun kendi başvurusu içindir.",
+      "evraklar": [
+        {
+          "id": "MUVAFAKATNAME_COCUK",
+          "ad": "Muvafakatname Aslı ve Fotokopisi (Çift Apostille)",
+          "zorunlu": true,
+          "detay": "Sadece bir ebeveynle seyahat eden reşit olmayanlar için diğer ebeveynden alınacak noter tasdikli ve apostilli muvafakatname (3 aydan eski olmamalı). Sınır polisi İtalyanca veya İngilizce olarak görmek isteyebilir. Tek taraflı velayet durumunda yetkili mahkeme kararı yeterlidir. ÇİFT APOSTİLLE zorunludur: 1) Noterden Muvafakatname, 2) Apostille, 3) Apostilli muvafakatnamenin noter onaylı İtalyancaya tercümesi, 4) Tercümeye tekrar Apostille.",
+          "gecerlilik": "3_ay",
+          "apostille": "cift_apostille_zorunlu",
+          "ankara_ozel": "Çocuğun (18 yaş altı) ebeveynlerinden biri ile seyahat etmeyeceği durumlarda, birlikte seyahat edecek reşit olan kişinin noterden sorumluluğunu üstlendiğine dair Taahhütname sunması gerekmektedir."
+        },
+        {
+          "id": "TEMINAT",
+          "ad": "Teminat (Finansal Yeterlilik)",
+          "zorunlu": true,
+          "detay": "İtalya İçişleri Bakanlığı tutarlarına uygun mali yeterlilik belgesi.",
+          "kaynak": "italya_iceisleri_bakanligi"
+        },
+        {
+          "id": "MADDI_DESTEKCI_COCUK",
+          "ad": "Maddi Destekçi Evrakları",
+          "zorunlu": true,
+          "detay": "Reşit olmayanlar için geçimlerini sağlayan ebeveynlerine ait mali durumu gösterir evraklar, maddi yükümlülüğü üstlendiğini beyan eder mektup ve imza beyanı. Masrafları karşılayacak ebeveynler kendileri başvurmasa bile tüm çalışma ve gelir evraklarını eksiksiz ibraz etmek durumundadır.",
+          "icindekiler": ["ebeveyn_gelir_evraklari", "maddi_yukumluluk_taahhut_mektubu", "ebeveyn_imza_beyani"],
+          "bolge_ozel": {
+            "ankara": "Birinci derece dışındaki akrabaların sponsorluğu kabul edilmemektedir.",
+            "istanbul": "Birinci derece dışındaki akrabaların sponsorluğu kabul edilmemektedir.",
+            "izmir": "Ebeveynlerin sponsor olması durumunda her iki ebeveyne ait maddi gelir evrakları sunulmalıdır. Birinci derece akraba dışında sponsorluk olması durumunda noterden taahhütname sunulmalıdır.",
+            "diger": "Standart uygulama."
+          }
+        }
+      ]
+    }
+  },
+
+  "cocuklu_seyahat_kurallari": {
+    "aciklama": "Çocuklu seyahatte ek olarak gereken evraklar. Reşit olmayan çocukla seyahat eden yetişkin başvurularına uygulanır.",
+    "zorunlu_evraklar": [
+      {
+        "id": "MUVAFAKATNAME",
+        "ad": "Muvafakatname (Her İki Ebeveynden, Noter Onaylı)",
+        "zorunlu": true,
+        "detay": "Reşit olmayan çocuk için her iki ebeveyn tarafından çıkartılmış noter onaylı muvafakatname aslı ve fotokopisi. Boşanmış olsalar bile her iki ebeveyn vermek zorundadır. Ebeveynlik yetkisi tamamen birine verilmişse yalnızca o kişinin muvafakatnamesi yeterlidir.",
+        "gecerlilik": "3_ay",
+        "uyari": "Muvafakatnamenin geçerlilik süresi seyahatin tamamını kapsamalıdır."
+      },
+      {
+        "id": "COCUK_BASVURU_FORMU",
+        "ad": "Çocuğa Ayrı Başvuru Formu",
+        "zorunlu": true,
+        "detay": "Her çocuk için ayrı bir başvuru formu doldurulmalıdır. Form her iki ebeveyn tarafından imzalanmalıdır. 18 yaş altı bireyler tek başlarına başvuruda bulunamamaktadır."
+      },
+      {
+        "id": "DOGUM_BELGESI",
+        "ad": "Doğum / Nüfus Kayıt Belgesi",
+        "zorunlu": true,
+        "detay": "Çocuğun doğum belgesi (Formül A) veya ebeveynlik ilişkisini gösteren nüfus kayıt örneği."
+      }
+    ],
+    "ucuncu_sahis_seyahat": {
+      "aciklama": "Çocuk ebeveynleri dışında biri ile seyahat ediyorsa ek evrak gerekir",
+      "evraklar": [
+        {
+          "id": "REFAKAT_BEYANI",
+          "ad": "Refakat Beyanı",
+          "detay": "Çocuğa eşlik edecek kişinin adı muvafakatnamede belirtilmişse: ilgili refakat beyanı formu doldurulmalıdır. Kişinin adı belirtilmemişse: ebeveynler ve eşlik edecek kişi ilgili formu doldurup imzalamalıdır."
+        }
+      ],
+      "ankara_ozel": {
+        "id": "TAAHHUTNAME_ANKARA",
+        "ad": "Taahhütname (Ankara Büyükelçiliği Özel)",
+        "zorunlu": true,
+        "detay": "Ankara İtalyan Büyükelçiliğine başvurularda: çocuğa (18 yaş altı) eşlik edecek reşit kişinin noterden sorumluluğunu üstlendiğine dair taahhütname sunması gerekmektedir."
+      }
+    },
+    "biyometri_kurali": {
+      "12_yas_alti": "Ofise gelme zorunluluğu yoktur.",
+      "12_yas_ustu": "Biyometrik işlemler için ebeveyn veya yetkilendirilmiş kişi eşliğinde ofise gelmeleri zorunludur."
+    },
+    "schengen_vizeleri": {
+      "detay": "Çocuğun anne-babasına ya da eşlik edecek kişiye ait Schengen vizesi varsa, bu vizenin fotokopisi sunulmalıdır."
+    }
+  },
+
+  "bolge_ozel_kurallari": {
+    "ankara": {
+      "ad": "Ankara Büyükelçiliği",
+      "ozel_kurallar": [
+        "Çalışan, memur, emekli, çiftçi, isveren ve serbest meslek kategorilerinde imza sirküleri zorunluluğu yoktur.",
+        "Tur organizasyonlarında e-fatura zorunludur; ödeme banka havalesi ile yapılmışsa dekont, kredi kartı ile yapılmışsa hesap ekstresi gerekmektedir.",
+        "Çocuğun ebeveyni dışındaki biriyle seyahat etmesi durumunda noterden taahhütname zorunludur.",
+        "Birinci derece dışındaki akrabaların sponsorluğu kabul edilmemektedir."
+      ]
+    },
+    "istanbul": {
+      "ad": "İstanbul Başkonsolosluğu",
+      "iletisim": "0850 460 0849 (Türkiye içi) | +90 212 970 8493 (yurt dışı)",
+      "randevu": "Çalışma günleri 08:30-13:00 / 13:30-17:30 arasında telefonla randevu.",
+      "ozel_kurallar": [
+        "İmza sirküleri (çalışanlar ve isveren için) gereklidir.",
+        "Tur organizasyonlarında standart evraklar yeterlidir.",
+        "Birinci derece dışındaki akrabaların sponsorluğu kabul edilmemektedir."
+      ]
+    },
+    "izmir": {
+      "ad": "İzmir Konsolosluğu",
+      "randevu": "Konsolosluk mail adresi üzerinden randevu.",
+      "ozel_kurallar": [
+        "İmza sirküleri (çalışanlar ve isveren için) gereklidir.",
+        "Davetiye konaklamada uzun süreli ilişki (nişan/arkadaşlık) durumunda ek belgeler ve 'Uzak mesafe ilişki' formu gereklidir.",
+        "Ebeveynlerin sponsor olması durumunda her iki ebeveyne ait maddi gelir evrakları sunulmalıdır.",
+        "Birinci derece akraba dışında sponsorluk olması durumunda noterden taahhütname sunulmalıdır."
+      ]
+    },
+    "diger": {
+      "ad": "Diğer İller",
+      "aciklama": "Bölge ayrımına göre en az 90 gündür ikamet edilen şehrin bağlı olduğu başvuru merkezinden randevu alınmalıdır.",
+      "ozel_kurallar": [
+        "İmza sirküleri (çalışanlar ve isveren için) gereklidir.",
+        "Standart kurallar geçerlidir."
+      ]
+    }
+  },
+
+  "genel_uyarilar": [
+    "Başvuru sahipleri başvuru yapacakları şehirde en az 90 gündür resmi olarak ikamet etmelidir.",
+    "Her belgeden aslı ile birlikte bir fotokopisi ibraz edilmeli; belgeler 3 aydan eski olmamalıdır.",
+    "Tüm belgeler kaşe ve imza kısımları dahil okunaklı olmalı; kaşe ve imzalar üst üste gelmemelidir.",
+    "Evraklar şeffaf dosya vb. klasörlerle sunulmamalıdır.",
+    "Otel ve uçak gibi rezervasyon belgelerinde tüm birlikte başvuru yapacak kişilerin isimleri yer almalıdır.",
+    "Başvuru formunda ikamet adresi yazılı olmalıdır.",
+    "Seyahat tarihlerini kapsayan geçerli bir Schengen vizesi varsa yeni başvuru kabul edilmez.",
+    "Yabancı ülkelerden düzenlenmiş evrak ancak usulüne göre tasdikli ve Türkçe/İngilizce/İtalyancaya tercüme edilmişse geçerlidir.",
+    "Soyadı tutarsızlığı, boşanma, AB vatandaşı yakını olma durumlarında ek Tam Vukuatlı Nüfus Kayıt Örneği istenebilir.",
+    "Evlenme/boşanma nedeniyle güncellenmemiş pasaportlar geçerli değildir.",
+    "Pasaport kargo ile teslim isteniyorsa it-tr-appointment.idata.com.tr üzerinden adres girilmelidir.",
+    "Büyükelçilik/Konsolosluk ek belge ve mülakat talep edebilir; bu durumda işlem süresi değişebilir.",
+    "Vize harcı ve iDATA koordinasyon ücreti iade edilmez.",
+    "Ticaret Odalarının web sitelerinden alınan e-imzalı faaliyet belgelerinin geçerlik süresi bir aydır.",
+    "18 yaş altı bireyler tek başlarına başvuruda bulunamamaktadır.",
+    "Başvuruyu üçüncü bir şahıs yapacaksa yetkilendirme formu/vekaletname zorunludur."
+  ],
+
+  "algoritma_fonksiyonu": {
+    "aciklama": "Bu JSON'u kullanan get_document_list() fonksiyonunun beklenen çalışma mantığı",
+    "girdi_parametreleri": {
+      "meslek": "string - ['calisan','isveren','serbest_meslek','emekli','ogrenci','memur','ciftci','calismayanlar','cocuk']",
+      "konaklama": "string - ['otel', 'davetiye']",
+      "cocuklu": "boolean - reşit olmayan çocukla seyahat",
+      "ulasim": "string - ['ucak', 'arac', 'otobus', 'gemi', 'tren']",
+      "bolge": "string - ['ankara', 'istanbul', 'izmir', 'diger']"
+    },
+    "cikti_formati": {
+      "evrak_listesi": "array - zorunlu evrakların sıralı listesi [{id, ad, detay, zorunlu}]",
+      "uyarilar": "array - profile özel uyarı mesajları",
+      "bolge_notlari": "array - başvuru merkezine özel notlar",
+      "kombinasyon_kodu": "string - örnek: IT_TUR_MEMUR_TREN_DAVETIYE_ISTANBUL_COCUKLU"
+    }
+  }
+}

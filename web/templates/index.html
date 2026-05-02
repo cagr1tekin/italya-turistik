@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İtalya Turistik Vize — Evrak Kontrol Sistemi</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+
+  header { background: linear-gradient(135deg, #009246 0%, #006432 100%); color: white; padding: 18px 32px; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.2); }
+  header .flag { font-size: 2rem; }
+  header h1 { font-size: 1.3rem; font-weight: 700; }
+  header p  { font-size: .82rem; opacity: .85; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px; display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
+
+  .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+  .card h2 { font-size: 1rem; font-weight: 700; color: #006432; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 2px solid #e8f5e9; }
+
+  label { display: block; font-size: .82rem; font-weight: 600; color: #444; margin-bottom: 4px; margin-top: 14px; }
+  select, input[type=number], input[type=text] {
+    width: 100%; padding: 9px 12px; border: 1.5px solid #ddd; border-radius: 7px; font-size: .88rem;
+    transition: border .2s; background: #fafafa;
+  }
+  select:focus, input:focus { outline: none; border-color: #009246; background: white; }
+  .check-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+  .check-row input[type=checkbox] { width: 17px; height: 17px; accent-color: #009246; cursor: pointer; }
+  .check-row label { margin: 0; cursor: pointer; font-size: .88rem; }
+
+  .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: .95rem; font-weight: 700; cursor: pointer; transition: all .2s; margin-top: 20px; }
+  .btn-primary { background: #009246; color: white; }
+  .btn-primary:hover { background: #006432; transform: translateY(-1px); }
+  .btn-secondary { background: #e8f5e9; color: #006432; }
+  .btn-secondary:hover { background: #c8e6c9; }
+
+  /* Steps */
+  .step { display: none; }
+  .step.active { display: block; }
+
+  /* Document form */
+  .doc-section { margin-bottom: 20px; border: 1.5px solid #e0e0e0; border-radius: 9px; overflow: hidden; }
+  .doc-section-header { background: #f5f5f5; padding: 10px 16px; font-size: .88rem; font-weight: 700; color: #333; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+  .doc-section-header:hover { background: #eeeeee; }
+  .doc-section-body { padding: 14px 16px; display: none; }
+  .doc-section-body.open { display: block; }
+  .doc-section-header .arrow { transition: transform .2s; }
+  .doc-section-header.open .arrow { transform: rotate(180deg); }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+
+  .radio-row { display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap; }
+  .radio-row label { font-weight: 400; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .radio-row input { width: auto; }
+
+  /* Results */
+  .result-card { margin-bottom: 14px; border-radius: 10px; overflow: hidden; border: 1.5px solid #e0e0e0; }
+  .result-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .result-body { padding: 12px 16px; }
+
+  .skor-badge { font-size: 1.1rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; }
+  .skor-ok   { background: #e8f5e9; color: #2e7d32; }
+  .skor-warn { background: #fff8e1; color: #f57f17; }
+  .skor-bad  { background: #fce4ec; color: #b71c1c; }
+
+  .sorun-item { font-size: .82rem; padding: 7px 10px; border-radius: 6px; margin-bottom: 6px; display: flex; gap: 8px; align-items: flex-start; }
+  .sorun-item .badge { font-size: .7rem; font-weight: 800; padding: 2px 7px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .KRITIK  { background: #fce4ec; }
+  .KRITIK  .badge { background: #b71c1c; color: white; }
+  .YUKSEK  { background: #fff8e1; }
+  .YUKSEK  .badge { background: #f57f17; color: white; }
+  .ORTA    { background: #e3f2fd; }
+  .ORTA    .badge { background: #1565c0; color: white; }
+
+  .genel-skor { text-align: center; padding: 24px; }
+  .genel-skor .big { font-size: 3rem; font-weight: 900; }
+  .genel-skor .label { font-size: .85rem; color: #666; margin-top: 4px; }
+  .genel-skor .verdict { font-size: 1rem; font-weight: 700; margin-top: 12px; padding: 8px 20px; border-radius: 20px; display: inline-block; }
+  .verdict-ok   { background: #e8f5e9; color: #2e7d32; }
+  .verdict-warn { background: #fff8e1; color: #f57f17; }
+  .verdict-bad  { background: #fce4ec; color: #b71c1c; }
+
+  .stat-row { display: flex; justify-content: center; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat .n  { font-size: 1.6rem; font-weight: 800; }
+  .stat .lbl{ font-size: .75rem; color: #666; }
+  .n-kritik { color: #b71c1c; }
+  .n-yuksek { color: #f57f17; }
+  .n-orta   { color: #1565c0; }
+
+  .info-box { background: #e8f5e9; border-left: 4px solid #009246; padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: .82rem; margin-bottom: 8px; }
+  .warn-box { background: #fff8e1; border-left: 4px solid #f57f17; padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: .82rem; margin-bottom: 8px; }
+
+  .loading { text-align: center; padding: 40px; color: #666; }
+  .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #ddd; border-top-color: #009246; border-radius: 50%; animation: spin .8s linear infinite; margin-bottom: 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="flag">🇮🇹</span>
+  <div>
+    <h1>İtalya Turistik Vize — Evrak Kontrol Sistemi</h1>
+    <p>iDATA kuralları üzerinden belge içeriği analizi ve onay tahmini</p>
+  </div>
+</header>
+
+<div class="container">
+  <!-- SOL: Kombinasyon Seçimi -->
+  <div>
+    <div class="card">
+      <h2>📋 Başvuru Bilgileri</h2>
+
+      <label>Meslek Grubu</label>
+      <select id="meslek">
+        {% for m in meslek_gruplari %}
+        <option value="{{ m }}">{{ m.replace('_',' ').title() }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Konaklama Türü</label>
+      <select id="konaklama">
+        {% for k in konaklama_turleri %}
+        <option value="{{ k }}">{{ k.replace('_',' ').title() }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Ulaşım Aracı</label>
+      <select id="ulasim">
+        {% for u in ulasim_araclari %}
+        <option value="{{ u }}">{{ u.replace('_',' ').title() }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Başvuru Bölgesi</label>
+      <select id="bolge">
+        {% for b in basvuru_bolgeleri %}
+        <option value="{{ b }}">{{ b.title() }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Seyahat Süresi (gün)</label>
+      <input type="number" id="seyahat_suresi" value="7" min="1" max="90">
+
+      <div class="check-row">
+        <input type="checkbox" id="cocuklu">
+        <label for="cocuklu">Çocuklu Seyahat</label>
+      </div>
+
+      <button class="btn btn-primary" onclick="yukleBelgeler()">Evrak Listesini Göster →</button>
+    </div>
+
+    <!-- Uyarılar -->
+    <div id="uyariBolum" style="display:none; margin-top:16px;" class="card">
+      <h2>⚠️ Konsolosluk Uyarıları</h2>
+      <div id="uyariIcerik"></div>
+    </div>
+  </div>
+
+  <!-- SAĞ: Belge Form & Sonuçlar -->
+  <div>
+    <!-- STEP 1: Belge form -->
+    <div id="step1" class="step card">
+      <div style="text-align:center; padding:40px; color:#999;">
+        <div style="font-size:3rem;">📄</div>
+        <p style="margin-top:12px;">Sol panelden başvuru bilgilerini seçin.</p>
+      </div>
+    </div>
+
+    <!-- STEP 2: Form dolu, kontrol bekleniyor -->
+    <div id="step2" class="step card" style="display:none;">
+      <h2>🔍 Belge İçeriği Analizi</h2>
+      <p style="font-size:.83rem; color:#666; margin-bottom:20px;">Her belgenin içerik alanlarını girin. Sistem iDATA kurallarına göre değerlendirecek.</p>
+      <div id="docForm"></div>
+      <button class="btn btn-primary" onclick="kontrolEt()">Belgeleri Analiz Et →</button>
+    </div>
+
+    <!-- STEP 3: Sonuçlar -->
+    <div id="step3" style="display:none;">
+      <div class="card" style="margin-bottom:20px;">
+        <div class="genel-skor" id="genelSkor"></div>
+      </div>
+      <div id="belgeKartlari"></div>
+      <button class="btn btn-secondary" style="max-width:200px;" onclick="geriDon()">← Tekrar Düzenle</button>
+    </div>
+
+    <div id="loadingDiv" style="display:none;" class="card">
+      <div class="loading"><div class="spinner"></div><br>Analiz yapılıyor...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Belge form tanımları ─────────────────────────────────────────────────────
+// Her bölüm: { id, baslik, fields: [{key, label, type, default, ...}] }
+
+function getBolumler(meslek, konaklama, ulasim, cocuklu) {
+  const bolumler = [];
+
+  bolumler.push({
+    id: "PASAPORT", baslik: "🛂 Pasaport",
+    fields: [
+      { key:"pas_gecerlilik_gun", label:"Vize bitişinden sonra geçerlilik (gün)", type:"number", default:180, min:0, max:3650 },
+      { key:"pas_bos_sayfa",      label:"Boş sayfa sayısı", type:"number", default:5, min:0, max:50 },
+    ]
+  });
+
+  bolumler.push({
+    id: "SIGORTA", baslik: "🏥 Seyahat Sağlık Sigortası",
+    fields: [
+      { key:"sig_teminat_eur",      label:"Teminat tutarı (EUR)", type:"number", default:30000, min:0, max:200000 },
+      { key:"sig_schengen_kapsamli",label:"Schengen bölgesi kapsamında mı?",   type:"bool", default:true },
+      { key:"sig_gidis_oncesi_var", label:"Gidiş tarihinden 1 gün önce başlıyor mu?", type:"bool", default:true },
+      { key:"sig_donus_sonrasi_var",label:"Dönüş tarihinden 1 gün sonra bitiyor mu?", type:"bool", default:true },
+      { key:"sig_eur_belirtilmis",  label:"Teminat EUR olarak belirtilmiş mi?", type:"bool", default:true },
+    ]
+  });
+
+  bolumler.push({
+    id: "BANKA", baslik: "🏦 Banka Dökümü / Maddi Gelir",
+    fields: [
+      { key:"banka_son_bakim_gun",  label:"Döküm düzenleme tarihi (kaç gün önce)", type:"number", default:10, min:0, max:180 },
+      { key:"banka_kase_imza_var",  label:"Banka kaşesi ve imzası var mı?",        type:"bool", default:true },
+      { key:"banka_bakiye_eur",     label:"Güncel bakiye (EUR)",                   type:"number", default:1500, min:0, max:100000 },
+      { key:"banka_6ay_duzenli",    label:"Son 6 ayda düzenli gelir yatışı görünüyor mu?", type:"bool", default:true },
+      { key:"banka_trend",          label:"Bakiye trendi", type:"radio",
+        options:[{v:"artan",l:"Artıyor"},{v:"stabil",l:"Stabil"},{v:"azalan",l:"Azalıyor"}], default:"stabil" },
+      { key:"banka_ani_para",       label:"Ani büyük para girişi var mı?",          type:"bool", default:false },
+    ]
+  });
+
+  bolumler.push({
+    id: "BASVURU_FORMU", baslik: "📝 Başvuru Formu",
+    fields: [
+      { key:"form_imzali_tarihli",      label:"Form imzalı ve tarihli mi?",                    type:"bool", default:true },
+      { key:"form_adres_var",           label:"İkamet adresi yazılı mı?",                       type:"bool", default:true },
+      { key:"form_telefon_sahip",       label:"Telefon numarası başvuru sahibine ait mi?",      type:"bool", default:true },
+      { key:"form_seyahat_tarihi_tutarli", label:"Seyahat tarihleri diğer belgelerle tutarlı mı?", type:"bool", default:true },
+    ]
+  });
+
+  bolumler.push({
+    id: "BILDIRGE", baslik: "📄 Seyahat Bildirgesi",
+    fields: [
+      { key:"bildirge_gelir_beyan",    label:"Aylık ortalama gelir beyanı var mı?",         type:"bool", default:true },
+      { key:"bildirge_seyahat_arkadasi", label:"Birlikte seyahat edilecekler belirtilmiş mi?", type:"bool", default:true },
+    ]
+  });
+
+  // Ulaşım
+  const ulasimFields = [
+    { key:"rez_yolcu_adlari_tam", label:"Tüm yolcuların isimleri yer alıyor mu?", type:"bool", default:true },
+    { key:"rez_tarih_tutarli",    label:"Rezervasyon tarihleri formla tutarlı mı?", type:"bool", default:true },
+  ];
+  if (ulasim === "ucak") {
+    ulasimFields.unshift({ key:"rez_donus_bileti_var", label:"Gidiş-dönüş bileti var mı?", type:"bool", default:true });
+  }
+  if (ulasim === "arac") {
+    ulasimFields.push({ key:"yesil_kart_var", label:"Yeşil kart (uluslararası sigorta) var mı?", type:"bool", default:true });
+  }
+  bolumler.push({ id:"ULASIM", baslik:"✈️ Ulaşım Rezervasyonu", fields: ulasimFields });
+
+  // Konaklama
+  const konFields = [
+    { key:"konal_tum_isimler_var", label:"Tüm başvurucuların isimleri yer alıyor mu?", type:"bool", default:true },
+  ];
+  if (konaklama === "davetiye") {
+    konFields.push({ key:"davet_renkli_cikti",  label:"Fotokopiler renkli çıktı mı?",        type:"bool", default:true });
+    konFields.push({ key:"davet_oturma_izni_var", label:"Oturma izni fotokopisi var mı (AB vatandaşı değilse)?", type:"bool", default:true });
+  }
+  bolumler.push({ id:"KONAKLAMA", baslik:"🏨 Konaklama Belgesi", fields: konFields });
+
+  // Meslek
+  if (!["ogrenci","calismayanlar","cocuk"].includes(meslek)) {
+    const meslekFields = [
+      { key:"meslek_antelli_kagit",  label:"Şirket/kurum antetli kağıda mı?",              type:"bool", default:true },
+      { key:"meslek_kase_imza",      label:"Yetkili imzası ve kaşesi var mı?",              type:"bool", default:true },
+      { key:"meslek_belge_yasi_gun", label:"Belge kaç günlük?",                             type:"number", default:30, min:0, max:365 },
+      { key:"faaliyet_yasi_gun",     label:"Faaliyet belgesi kaç günlük?",                  type:"number", default:20, min:0, max:365 },
+      { key:"faaliyet_kaynak",       label:"Faaliyet belgesi kaynağı",                      type:"radio",
+        options:[{v:"resmi",l:"Resmi belge (90 gün)"},{v:"web",l:"Ticaret Odası web (30 gün)"}], default:"resmi" },
+    ];
+    if (["calisan","isveren"].includes(meslek)) {
+      meslekFields.push({ key:"imza_sirkuleri_var", label:"İmza sirküleri mevcut mu?", type:"bool", default:true });
+    }
+    bolumler.push({ id:"MESLEK", baslik:"💼 Meslek & İş Belgesi", fields: meslekFields });
+  }
+
+  // Muvafakatname
+  if (cocuklu || meslek === "cocuk") {
+    const muvFields = [
+      { key:"muv_noter_onayli",      label:"Noter onaylı mı?",                              type:"bool", default:true },
+      { key:"muv_her_iki_ebeveyn",   label:"Her iki ebeveyn tarafından mı?",               type:"bool", default:true },
+      { key:"muv_gecerlilik_gun",    label:"Düzenleme tarihi kaç gün önce? (max 90)",       type:"number", default:30, min:0, max:365 },
+    ];
+    if (meslek === "cocuk") {
+      muvFields.push({ key:"muv_apostille_var", label:"Çift apostille mevcut mu?", type:"bool", default:true });
+    }
+    bolumler.push({ id:"MUVAFAKATNAME", baslik:"📜 Muvafakatname", fields: muvFields });
+  }
+
+  return bolumler;
+}
+
+// ─── Form Oluştur ─────────────────────────────────────────────────────────────
+function renderForm(bolumler) {
+  return bolumler.map(b => `
+    <div class="doc-section">
+      <div class="doc-section-header" onclick="toggleBolum(this)">
+        ${b.baslik} <span class="arrow">▼</span>
+      </div>
+      <div class="doc-section-body open">
+        ${b.fields.map(f => renderField(f)).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderField(f) {
+  if (f.type === "bool") {
+    return `
+      <div class="check-row" style="margin-top:12px;">
+        <input type="checkbox" id="${f.key}" ${f.default ? "checked" : ""}>
+        <label for="${f.key}">${f.label}</label>
+      </div>`;
+  }
+  if (f.type === "number") {
+    return `
+      <div style="margin-top:12px;">
+        <label for="${f.key}">${f.label}</label>
+        <input type="number" id="${f.key}" value="${f.default}" min="${f.min??0}" max="${f.max??99999}">
+      </div>`;
+  }
+  if (f.type === "radio") {
+    return `
+      <div style="margin-top:12px;">
+        <label>${f.label}</label>
+        <div class="radio-row">
+          ${f.options.map(o => `
+            <label>
+              <input type="radio" name="${f.key}" value="${o.v}" ${o.v===f.default?"checked":""}> ${o.l}
+            </label>`).join('')}
+        </div>
+      </div>`;
+  }
+  return "";
+}
+
+function toggleBolum(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle("open");
+  header.classList.toggle("open");
+}
+
+// ─── Akış ─────────────────────────────────────────────────────────────────────
+let _bolumler = [];
+
+async function yukleBelgeler() {
+  const params = getParams();
+  const res = await fetch("/api/evraklar", {
+    method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(params)
+  });
+  const data = await res.json();
+
+  // Uyarılar
+  if (data.uyarilar.length || data.bolge_notlari.length) {
+    document.getElementById("uyariBolum").style.display = "block";
+    const ic = document.getElementById("uyariIcerik");
+    ic.innerHTML = [
+      ...data.bolge_notlari.map(n => `<div class="info-box">${n}</div>`),
+      ...data.uyarilar.map(u  => `<div class="warn-box">${u}</div>`),
+    ].join('');
+  }
+
+  _bolumler = getBolumler(params.meslek, params.konaklama, params.ulasim, params.cocuklu);
+  document.getElementById("docForm").innerHTML = renderForm(_bolumler);
+  document.getElementById("step1").style.display = "none";
+  document.getElementById("step2").style.display = "block";
+  document.getElementById("step3").style.display = "none";
+}
+
+function getParams() {
+  return {
+    meslek:   document.getElementById("meslek").value,
+    konaklama:document.getElementById("konaklama").value,
+    ulasim:   document.getElementById("ulasim").value,
+    bolge:    document.getElementById("bolge").value,
+    cocuklu:  document.getElementById("cocuklu").checked,
+    seyahat_suresi: parseInt(document.getElementById("seyahat_suresi").value) || 7,
+  };
+}
+
+function collectFields() {
+  const fields = {};
+  _bolumler.forEach(b => {
+    b.fields.forEach(f => {
+      if (f.type === "bool") {
+        fields[f.key] = document.getElementById(f.key)?.checked ?? f.default;
+      } else if (f.type === "number") {
+        fields[f.key] = parseFloat(document.getElementById(f.key)?.value ?? f.default);
+      } else if (f.type === "radio") {
+        const checked = document.querySelector(`input[name="${f.key}"]:checked`);
+        fields[f.key] = checked ? checked.value : f.default;
+      }
+    });
+  });
+  return fields;
+}
+
+async function kontrolEt() {
+  const params = getParams();
+  params.fields = collectFields();
+
+  document.getElementById("step2").style.display = "none";
+  document.getElementById("loadingDiv").style.display = "block";
+
+  const res = await fetch("/api/kontrol", {
+    method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(params)
+  });
+  const data = await res.json();
+
+  document.getElementById("loadingDiv").style.display = "none";
+  renderSonuclar(data);
+  document.getElementById("step3").style.display = "block";
+}
+
+function geriDon() {
+  document.getElementById("step3").style.display = "none";
+  document.getElementById("step2").style.display = "block";
+}
+
+// ─── Sonuç Render ─────────────────────────────────────────────────────────────
+function renderSonuclar(data) {
+  const oz = data.ozet;
+  const onay = oz.onay_olasiligi;
+  const pct = Math.round(onay * 100);
+
+  let renk, etiket, verdictClass;
+  if (onay >= 0.75)      { renk="color:#2e7d32"; etiket="✅ Onay İhtimali Yüksek"; verdictClass="verdict-ok"; }
+  else if (onay >= 0.50) { renk="color:#f57f17"; etiket="⚠️ Dikkat Gerekiyor";     verdictClass="verdict-warn"; }
+  else                   { renk="color:#b71c1c"; etiket="❌ Yüksek Ret Riski";      verdictClass="verdict-bad"; }
+
+  document.getElementById("genelSkor").innerHTML = `
+    <div class="big" style="${renk}">${pct}%</div>
+    <div class="label">Tahmini Onay Olasılığı</div>
+    <div class="verdict ${verdictClass}">${etiket}</div>
+    <div class="stat-row">
+      <div class="stat"><div class="n n-kritik">${oz.n_kritik}</div><div class="lbl">KRİTİK</div></div>
+      <div class="stat"><div class="n n-yuksek">${oz.n_yuksek}</div><div class="lbl">YÜKSEK</div></div>
+      <div class="stat"><div class="n n-orta">${oz.n_orta}</div><div class="lbl">ORTA</div></div>
+      <div class="stat"><div class="n" style="color:#333">${oz.ortalama_skor.toFixed(2)}</div><div class="lbl">ORT. SKOR</div></div>
+    </div>
+  `;
+
+  const kartlar = Object.entries(data.belgeler).map(([bid, bilgi]) => {
+    const s = bilgi.skor;
+    let skorClass = s >= 0.8 ? "skor-ok" : s >= 0.5 ? "skor-warn" : "skor-bad";
+    const sorunHtml = bilgi.sorunlar.length === 0
+      ? `<p style="color:#2e7d32; font-size:.83rem;">✓ Sorun tespit edilmedi.</p>`
+      : bilgi.sorunlar.map(sr => `
+          <div class="sorun-item ${sr.seviye}">
+            <span class="badge">${sr.seviye}</span>
+            <span>${sr.mesaj}</span>
+          </div>`).join('');
+
+    return `
+      <div class="result-card">
+        <div class="result-header" style="background:${s>=0.8?'#f1f8f1':s>=0.5?'#fffde7':'#fce4ec'}">
+          <strong style="font-size:.9rem;">${bilgi.etiket}</strong>
+          <span class="skor-badge ${skorClass}">${Math.round(s*100)}</span>
+        </div>
+        <div class="result-body">${sorunHtml}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById("belgeKartlari").innerHTML = kartlar;
+}
+</script>
+</body>
+</html>

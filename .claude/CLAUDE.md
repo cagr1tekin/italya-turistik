@@ -185,13 +185,96 @@ get_document_list(
 
 ---
 
+## Hedef Sistem Mimarisi — PDF Tabanlı AI Değerlendirme
+
+### Vizyon
+Kullanıcı başvuru bilgilerini girer ve evraklarını PDF olarak yükler. Sistem her evrakı otomatik olarak analiz eder, eksik/hatalı alanları tespit eder ve başvurunun onay olasılığını puanlar. **Her istek için Claude API kullanılmaz** — bunun yerine eğitilmiş bir lokal model kullanılır.
+
+### Neden Claude API Değil?
+| Claude API (Her İstekte) | Eğitilmiş Model |
+|---|---|
+| %70-90 tutarlılık, hallucination riski | Deterministik, kurallar sabit |
+| Her istek = maliyet | Tek seferlik eğitim maliyeti |
+| API latency (1-3 sn) | Milisaniyeler |
+| PDF okuma kabiliyeti değişken | Kontrollü feature extraction |
+
+### Akış
+
+```
+Kullanıcı: başvuru bilgileri (meslek, bölge vb.) + PDF'ler
+    ↓
+[1] PDF Text Extraction
+    pdfplumber / PyMuPDF ile metin çıkarımı
+    "Pasaport No: TR... Geçerlilik: 2028-03-15 Boş Sayfa: 4"
+    ↓
+[2] Feature Extraction (regex + NLP)
+    Her belge türü için belirlenmiş alanlar çıkarılır
+    {pas_gecerlilik_gun: 720, pas_bos_sayfa: 4, sig_teminat_eur: 30000, ...}
+    ↓
+[3] Eğitilmiş Model (scikit-learn / XGBoost)
+    feature_matrix.csv + gerçek etiketlerle eğitilmiş classifier
+    → per-belge skor (0.0 - 1.0) + onay_olasiligi
+    ↓
+[4] rule_checker.py (kural doğrulama katmanı)
+    Model çıktısı üzerine deterministic kurallar çalışır
+    → KRITIK / YUKSEK / ORTA seviye uyarılar
+    ↓
+[5] Sonuç Raporu
+    Hangi evrak okey, hangi evrakta ne eksik, genel onay skoru
+```
+
+### Mevcut Altyapının Bu Mimariyle İlişkisi
+
+`mock_rich_v3.csv`'deki feature sütunları (pas_gecerlilik_gun, sig_teminat_eur vb.) zaten **"PDF'den çıkarılacak alanlar"** olarak tasarlanmıştır. Yani:
+- **[1-2] PDF extraction** → mock verideki sütunları gerçek belgeden doldurur
+- **[3] Model** → bu sütunları girdi alır, `etiket` (Onay/Ret) tahmin eder
+- **[4] rule_checker.py** → şu anki yapısı korunur, girdiyi artık kullanıcı değil extraction katmanı sağlar
+
+### Feature Extraction — Belge Türü Başına Çıkarılacak Alanlar
+
+| Belge | Çıkarılacak Alanlar | Yöntem |
+|-------|---------------------|--------|
+| Pasaport | geçerlilik tarihi, boş sayfa sayısı | regex (tarih pattern) |
+| Sigorta poliçesi | teminat tutarı (EUR), kapsam tarihleri, Schengen ibaresi | regex + keyword |
+| Banka dökümü | düzenleme tarihi, kaşe/imza varlığı, bakiye, 6 aylık trend | regex + NLP |
+| Faaliyet belgesi | düzenleme tarihi, kurum kaşesi, kaynak türü (web/resmi) | regex + keyword |
+| Muvafakatname | noter tarihi, apostille varlığı, her iki ebeveyn imzası | keyword search |
+
+### Geliştirme Aşamaları
+
+**Faz 1 — PDF Extraction Modülü**
+- [ ] `engine/pdf_extractor.py` oluştur
+- [ ] Her belge türü için ayrı extraction fonksiyonu yaz (pasaport'tan başla)
+- [ ] Gerçek PDF'lerle test et, regex pattern'lerini doğrula
+- [ ] Çıktı formatı: `mock_rich_v3.csv` ile birebir uyumlu feature dict
+
+**Faz 2 — Model Eğitimi**
+- [ ] Gerçek başvuru sonuçlarını topla (onay/ret etiketleri)
+- [ ] `mock_rich_v3.csv` şablonunu gerçek veriyle doldur
+- [ ] XGBoost / RandomForest classifier eğit
+- [ ] Cross-validation ile doğruluk ölç
+- [ ] `engine/model/` altına kaydet
+
+**Faz 3 — Entegrasyon**
+- [ ] Web arayüzüne PDF upload ekle
+- [ ] extraction → model → rule_checker pipeline'ını bağla
+- [ ] Per-belge skor + genel onay raporu UI'ına ekle
+
+### Kritik Tasarım Kararları
+- **rule_checker.py silinmez:** Model yanlış tahmin etse bile deterministic kurallar arka planda çalışır, çelişki varsa kural kazanır
+- **Her belge türü ayrı extraction fonksiyonu:** Pasaport PDF'si ile banka dökümü PDF'si tamamen farklı yapıda — tek genel parser yazmak hata kaynağı olur
+- **PDF'ler sunucuda saklanmaz:** Privacy açısından extraction yapıldıktan sonra PDF silinir, yalnızca feature dict tutulur
+
+---
+
 ## Geliştirme Öncelikleri
 
 1. [ ] `generate_all_combinations()` çalıştırılarak `data/` güncellenecek
 2. [ ] Emeklilik belgesi teminat tutarları iDATA'dan alınacak ve JSON'a eklenecek
-3. [ ] Mock başvuru veri seti üretimi (doc_completeness_score eğitimi için)
+3. [ ] `engine/pdf_extractor.py` — pasaport extraction'dan başla (Faz 1)
 4. [ ] Test suite: her kombinasyon için beklenen evrak sayısı doğrulama
-5. [ ] Gelecek: Almanya vize modülü (modüler yapıya uygun)
+5. [ ] Gerçek başvuru verisi toplandığında model eğitimi başlat (Faz 2)
+6. [ ] Gelecek: Almanya vize modülü (modüler yapıya uygun)
 
 ---
 
